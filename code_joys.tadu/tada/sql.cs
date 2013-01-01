@@ -1,4 +1,6 @@
-﻿namespace code_joys.tadu
+﻿using code_joys;
+
+namespace tada
 {
 public class sql {
   string _sql, _select, _from, _where, _order;
@@ -22,15 +24,6 @@ public class sql {
   public override string ToString() {
     _sql = "{0} {1} {2} {3}".plug(_select, _from, _where, _order);
     return _sql;
-  }
-}
-}
-
-namespace code_joys
-{
-public static class string_extensions {
-  public static string plug(this string format, params object[] values) {
-    return string.Format(format, values);
   }
 }
 }

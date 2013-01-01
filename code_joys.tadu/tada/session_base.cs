@@ -4,20 +4,20 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace code_joys.tadu {
+namespace tada {
 
-public class session : IDisposable {
+public class session_base : IDisposable {
   i_connection_factory connection_factory;
   i_table_to_object_mapper mapper;
   IDbConnection connection;
   bool connection_is_shared = false;
 
-  public session() { 
-    connection_factory = configuration.connection_factory;
+  public session_base(i_connection_factory connection_factory) { 
+    this.connection_factory = connection_factory;
     mapper = new table_to_object_mapper();
   }
 
-  public session open_connection() {
+  public session_base open_connection() {
     connection = connection_factory.create();
     connection.Open();
     connection_is_shared = true;

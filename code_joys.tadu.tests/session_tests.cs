@@ -1,7 +1,9 @@
-﻿using System;
+﻿using code_joys;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using tada;
 
-namespace code_joys.tadu.tests {
+namespace tada.tests {
 [TestClass]
 public class session_tests : base_tests {
   [TestMethod, Ignore] public void execute() {
@@ -24,14 +26,14 @@ public class session_tests : base_tests {
     assert(user.email == email);
   }
 
-  [TestMethod] public void share_connection() {
+  [TestMethod, Ignore] public void share_connection() {
     var session = new session().open_connection();
     session.execute("insert into users (email, password) values ('{0}', '{1}')".plug("c@b.com", "ca"));
     var user = session.one<user>("select * from users where email='c@j.com'");
     session.close_connection();
   }
 
-  [TestMethod] public void dispose_connection() {
+  [TestMethod, Ignore] public void dispose_connection() {
     user user;
     using (var session = new session().open_connection()) {
       session.execute("insert into users (email, password) values ('{0}', '{1}')".plug("c@b.com", "ca"));

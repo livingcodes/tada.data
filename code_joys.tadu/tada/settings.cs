@@ -1,4 +1,4 @@
-﻿namespace code_joys.tadu {
+﻿namespace tada {
 public interface i_settings {
   string connection_string { get; }
 }

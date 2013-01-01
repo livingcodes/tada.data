@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace code_joys.tadu.tests {
+namespace tada.tests {
 
 [TestClass]
 public class sql_tests : base_tests {

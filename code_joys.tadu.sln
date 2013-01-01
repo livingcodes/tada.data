@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Web
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "code_joys.tadu", "code_joys.tadu\code_joys.tadu.csproj", "{B7FA72A6-EF96-424D-B390-42D0ADAF4107}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "code_joys", "code_joys.tadu\code_joys.csproj", "{B7FA72A6-EF96-424D-B390-42D0ADAF4107}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "code_joys.tadu.tests", "code_joys.tadu.tests\code_joys.tadu.tests.csproj", "{FB82B234-EE21-4451-87AA-757544381DE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "code_joys.tests", "code_joys.tadu.tests\code_joys.tests.csproj", "{FB82B234-EE21-4451-87AA-757544381DE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

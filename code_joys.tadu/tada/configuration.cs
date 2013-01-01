@@ -1,5 +1,5 @@
 ﻿using System.Configuration;
-namespace code_joys.tadu {
+namespace tada {
 public static class configuration {
   static i_settings _settings = null;
   static i_connection_factory _connection_factory = null;
@@ -17,7 +17,7 @@ public static class configuration {
   public static i_connection_factory connection_factory { 
     get {
       if (_connection_factory == null)
-        _connection_factory = new connection_factory(settings.connection_string);
+        _connection_factory = new sql_server_connection_factory(settings.connection_string);
       return _connection_factory;
     } 
     set { _connection_factory = value; }
