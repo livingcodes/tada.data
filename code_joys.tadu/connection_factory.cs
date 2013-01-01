@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
+using System.Data.SqlServerCe;
 
 namespace code_joys.tadu {
 public interface i_connection_factory {
@@ -13,7 +13,7 @@ public class connection_factory : i_connection_factory {
     this.connection_string = connection_string;
   }
   public IDbConnection create() {
-    return new SqlConnection(connection_string);
+    return new SqlCeConnection(connection_string);
   }
 }
 }
