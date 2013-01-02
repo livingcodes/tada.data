@@ -41,5 +41,11 @@ public class session_tests : base_tests {
     }
     assert(user.email == "c@j.com");
   }
+  
+  [TestMethod] public void domain_member_and_column_name_differ_but_are_mapped() {
+    var session = new session();
+    var user = session.one<user>("select email as email_address, password from users where id=1");
+    assert(user.email == "casey@codejoys.com");
+  }
 }
 }
