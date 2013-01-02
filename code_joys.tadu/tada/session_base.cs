@@ -12,9 +12,9 @@ public class session_base : IDisposable {
   IDbConnection connection;
   bool connection_is_shared = false;
 
-  public session_base(i_connection_factory connection_factory) { 
+  public session_base(i_connection_factory connection_factory, i_table_to_object_mapper mapper) { 
     this.connection_factory = connection_factory;
-    mapper = new table_to_object_mapper();
+    this.mapper = mapper;
   }
 
   public session_base open_connection() {
@@ -58,7 +58,7 @@ public class session_base : IDisposable {
     connection_is_shared = false;
   }
 
-  DataTable all(string sql) {
+  public DataTable all(string sql) {
     IDataReader reader = null;
     var table = new DataTable();
     var connection = create_connection();

@@ -42,8 +42,4 @@ public class session_tests : base_tests {
     assert(user.email == "c@j.com");
   }
 }
-
-struct user {
-  public string email, password;
-}
 }

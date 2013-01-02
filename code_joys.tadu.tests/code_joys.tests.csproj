@@ -52,10 +52,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="base_tests.cs" />
-    <Compile Include="session.cs" />
-    <Compile Include="sql_tests.cs" />
+    <Compile Include="tada\session.cs" />
+    <Compile Include="tada\sql_tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="session_tests.cs" />
+    <Compile Include="tada\user.cs" />
+    <Compile Include="tada\user_mapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\code_joys.tadu\code_joys.csproj">
