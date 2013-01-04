@@ -11,11 +11,13 @@ namespace tada
 // if object field does not have a matching column name then throw an exception
 public class table_to_struct_mapper : i_table_to_object_mapper 
 {
-  List<table_mapping> table_mappings;
+  List<table_mapping> _table_mappings;
 
   public table_to_struct_mapper(List<table_mapping> table_mappings) {
-    this.table_mappings = table_mappings;
+    _table_mappings = table_mappings;
   }
+
+  public List<table_mapping> table_mappings { get { return _table_mappings; } }
 
   public List<t> map<t>(DataTable table) {
     var items = new List<t>();
@@ -40,6 +42,7 @@ public class table_to_struct_mapper : i_table_to_object_mapper
 
 public interface i_table_to_object_mapper {
   List<t> map<t>(DataTable table);
+  List<table_mapping> table_mappings { get; }
 }
 
 public class column_mapping

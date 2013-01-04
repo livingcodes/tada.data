@@ -47,5 +47,12 @@ public class session_tests : base_tests {
     var user = session.one<user>("select email as email_address, password from users where email = 'casey@codejoys.com'");
     assert(user.email == "casey@codejoys.com");
   }
+
+  [TestMethod] public void get_users_with_same_email_using_plug() {
+    var email = "casey@codejoys.com";
+    var session = new session();
+    var users = session.all<user>("where email = '{0}'".plug(email));
+    assert(users.Count == 1);
+  }
 }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using code_joys;
 
 namespace tada {
 
@@ -24,7 +25,19 @@ public class session_base : IDisposable {
     return this;
   }
 
+  public virtual string process(Type type, string sql) {
+    if (!sql.ToLower().StartsWith("where "))
+      return sql;
+
+    var mapping = mapper.table_mappings.Where(m => m.type == type).First();
+    var new_sql = "select * from {0} {1}"
+      .plug(mapping.table, sql);
+    return new_sql;
+  }
+
   public List<t> all<t>(string sql) {
+    sql = process(typeof(t), sql);
+    
     var table = all(sql);
     var list = mapper.map<t>(table);
     return list;
