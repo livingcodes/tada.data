@@ -71,7 +71,14 @@ public class session_base : IDisposable {
     connection_is_shared = false;
   }
 
-  public DataTable all(string sql) {
+  IDictionary<string, string> param_info = new Dictionary<string, string>();
+
+  public session_base param(string name, object value) {
+    param_info.Add(name, value.ToString());
+    return this;
+  }
+
+  public DataTable all(string sql) {   
     IDataReader reader = null;
     var table = new DataTable();
     var connection = create_connection();
@@ -80,6 +87,14 @@ public class session_base : IDisposable {
         connection.Open();
       var command = connection.CreateCommand();
       command.CommandText = sql;
+
+      foreach (var p in param_info) {
+        var parameter = command.CreateParameter();
+        parameter.ParameterName = p.Key;
+        parameter.Value = p.Value;    
+        command.Parameters.Add(parameter);
+      }
+
       reader = command.ExecuteReader();
       table.Load(reader);
     }

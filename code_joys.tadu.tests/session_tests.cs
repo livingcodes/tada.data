@@ -54,5 +54,25 @@ public class session_tests : base_tests {
     var users = session.all<user>("where email = '{0}'".plug(email));
     assert(users.Count == 1);
   }
+
+  [TestMethod] public void get_users_with_same_email_using_parameter() {
+    var email = "casey@codejoys.com";
+    var id = 2;
+
+    var users = new session()
+      .param("@email", email)
+      .param("@id", id)
+      .all<user>("where email = @email and id = @id");
+    assert(users.Count == 1);
+  }
+
+  [TestMethod] public void get_users_with_same_email_using_int_parameter() {
+    var id = 8;
+    var session = new session();
+    var users = session
+      .param("@id", id)
+      .all<user>("where id = @id");
+    assert(users.Count == 1);
+  }
 }
 }
