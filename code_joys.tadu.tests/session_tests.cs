@@ -75,7 +75,7 @@ public class session_tests : base_tests {
     assert(users.Count == 1);
   }
 
-  [TestMethod, Ignore]
+  [TestMethod]
   public void rollback_uncommitted_transaction() {
     using (var db = new session().start_transaction())
       db.execute("update users set email = 'clown@yahoo.com' where id = 5");
@@ -90,7 +90,7 @@ public class session_tests : base_tests {
   [TestMethod]
   public void commit_transaction() {
     using (var db = new session().start_transaction()) {
-      db.execute("update users set email = 'clown@yahoo.com' where id = 4");
+      db.execute("update users set email = 'clown1@yahoo.com' where id = 4");
       db.commit();
     }
 
@@ -98,7 +98,21 @@ public class session_tests : base_tests {
       .param("@id", 4)
       .one<user>("where id=@id");
 
-    assert(user.email == "clown@yahoo.com");
+    assert(user.email == "clown1@yahoo.com");
+  }
+
+  [TestMethod]
+  public void rollback_transaction_after_exception() {
+    using (var db = new session().start_transaction()) {
+      db.execute("update users set email = 'exception@domain.com' where id = 5");
+      throw new Exception("This exception should cause rollback");
+      db.commit();
+    }
+    
+    var user = new session()
+      .one<user>("where id = 5");
+
+    assert(user.email == "c@b.com");
   }
 }
 }

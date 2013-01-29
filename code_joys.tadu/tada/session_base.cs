@@ -37,11 +37,14 @@ public class session_base : IDisposable {
   public void commit() {
     transaction.Commit();
     transaction_started = false;
+    close_connection();
   }
 
   public void rollback() {
     transaction.Rollback();
     transaction_started = false;
+    if (connection != null && connection.State != ConnectionState.Closed)
+      connection.Close();
   }
 
 //  void test() {
