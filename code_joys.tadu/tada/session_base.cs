@@ -11,7 +11,9 @@ public class session_base : IDisposable {
   i_connection_factory connection_factory;
   i_table_to_object_mapper mapper;
   IDbConnection connection;
+  IDbTransaction transaction;
   bool connection_is_shared = false;
+  bool transaction_started = false;
 
   public session_base(i_connection_factory connection_factory, i_table_to_object_mapper mapper) { 
     this.connection_factory = connection_factory;
@@ -24,6 +26,38 @@ public class session_base : IDisposable {
     connection_is_shared = true;
     return this;
   }
+
+  public session_base start_transaction() {
+    open_connection();
+    transaction = connection.BeginTransaction();
+    transaction_started = true;
+    return this;
+  }
+
+  public void commit() {
+    transaction.Commit();
+    transaction_started = false;
+  }
+
+  public void rollback() {
+    transaction.Rollback();
+    transaction_started = false;
+  }
+
+//  void test() {
+//    var db = this;
+//    //public session_base start_transaction() {}
+//    //using (var db = new session().start_transaction()) {}
+//    //db.sproc("get_user", params).all<user>();
+//    //db.sproc("get_user").param("id", 1).all<user>();
+
+//    int item_count, first_index, last_index;
+//    var users = db
+//      .cache("invalid users {0}-{1}".plug(first_index, last_index))
+//      .page(first_index, last_index, out item_count)
+//      .all<user>(@"where length(password) <= 6
+//                   order by email");
+//  }
 
   public virtual string process(Type type, string sql) {
     if (!sql.ToLower().StartsWith("where "))
@@ -51,10 +85,13 @@ public class session_base : IDisposable {
     // todo: parse parameters from sql
     int rows_affected;
     var connection = create_connection();
+      
     try {
       if (connection.State != ConnectionState.Open)
         connection.Open();
       var command = connection.CreateCommand();
+      if (transaction_started)
+        command.Transaction = transaction;
       command.CommandText = sql;
       rows_affected = command.ExecuteNonQuery();
     }
@@ -86,6 +123,8 @@ public class session_base : IDisposable {
       if (connection.State != ConnectionState.Open)
         connection.Open();
       var command = connection.CreateCommand();
+      if (transaction_started)
+        command.Transaction = transaction;
       command.CommandText = sql;
 
       foreach (var p in param_info) {
@@ -98,6 +137,11 @@ public class session_base : IDisposable {
       reader = command.ExecuteReader();
       table.Load(reader);
     }
+    // want to let user catch exception on their own; they may not want to rollback but rather handle exception
+    //catch (Exception ex) {
+    //  if (transaction_started && transaction != null)
+    //    transaction.Rollback();
+    //}
     finally {
       if (reader != null)
         reader.Close();
@@ -119,6 +163,10 @@ public class session_base : IDisposable {
   protected virtual void Dispose(bool disposing) {
     if (!_disposed) {
       if (disposing) {
+        if (transaction_started) {
+          transaction.Rollback();
+          transaction_started = false;
+        }
         if (connection != null && connection.State != ConnectionState.Closed)
           connection.Close();
       }

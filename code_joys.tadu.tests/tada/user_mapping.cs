@@ -8,7 +8,7 @@ class user_mapping : table_mapping
    {
       table = "users";
       type = typeof(user);
-      map("email", "email_address");
+      //map("email", "email_address");
    }
 }
 }

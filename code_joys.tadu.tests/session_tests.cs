@@ -74,5 +74,31 @@ public class session_tests : base_tests {
       .all<user>("where id = @id");
     assert(users.Count == 1);
   }
+
+  [TestMethod, Ignore]
+  public void rollback_uncommitted_transaction() {
+    using (var db = new session().start_transaction())
+      db.execute("update users set email = 'clown@yahoo.com' where id = 5");
+    
+    var user = new session()
+      .param("@id", 5)
+      .one<user>("where id=@id");
+
+    assert(user.email == "c@b.com");
+  }
+
+  [TestMethod]
+  public void commit_transaction() {
+    using (var db = new session().start_transaction()) {
+      db.execute("update users set email = 'clown@yahoo.com' where id = 4");
+      db.commit();
+    }
+
+    var user = new session()
+      .param("@id", 4)
+      .one<user>("where id=@id");
+
+    assert(user.email == "clown@yahoo.com");
+  }
 }
 }
