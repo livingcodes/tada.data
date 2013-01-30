@@ -114,5 +114,24 @@ public class session_tests : base_tests {
 
     assert(user.email == "c@b.com");
   }
+
+  [TestMethod] public void cache() {
+    var db = new session();
+    var count = db
+      .cache("count")
+      .one<int>("select count(email) from users");
+    
+    db.execute("insert into users (email, password) values ('count3@dracula.com', 'blood')");
+
+    var new_count = db
+      .cache("count")
+      .one<int>("select count(email) from users");
+
+    assert(count == new_count);
+
+    var diff = db.one<int>("select count(email) from users");
+
+    assert(diff > count);
+  }
 }
 }

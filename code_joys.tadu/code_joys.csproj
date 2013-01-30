@@ -37,6 +37,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\github\tada.data\lib\System.Data.SqlServerCe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="code_joys\string_extensions.cs" />
+    <Compile Include="tada\cache.cs" />
     <Compile Include="tada\connection_factory.cs" />
     <Compile Include="tada\session_base.cs" />
     <Compile Include="tada\sql.cs" />

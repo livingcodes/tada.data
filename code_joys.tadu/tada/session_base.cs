@@ -10,14 +10,20 @@ namespace tada {
 public class session_base : IDisposable {
   i_connection_factory connection_factory;
   i_table_to_object_mapper mapper;
+  i_cache _cache;
   IDbConnection connection;
   IDbTransaction transaction;
   bool connection_is_shared = false;
   bool transaction_started = false;
 
-  public session_base(i_connection_factory connection_factory, i_table_to_object_mapper mapper) { 
+  public session_base(
+    i_connection_factory connection_factory, 
+    i_table_to_object_mapper mapper, 
+    i_cache cache
+  ) { 
     this.connection_factory = connection_factory;
     this.mapper = mapper;
+    _cache = cache;
   }
 
   public session_base open_connection() {
@@ -48,15 +54,10 @@ public class session_base : IDisposable {
   }
 
 //  void test() {
-//    var db = this;
-//    //public session_base start_transaction() {}
-//    //using (var db = new session().start_transaction()) {}
-//    //db.sproc("get_user", params).all<user>();
-//    //db.sproc("get_user").param("id", 1).all<user>();
+//    db.sproc("get_user", params).all<user>();
+//    db.sproc("get_user").param("id", 1800).all<user>();
 
-//    int item_count, first_index, last_index;
 //    var users = db
-//      .cache("invalid users {0}-{1}".plug(first_index, last_index))
 //      .page(first_index, last_index, out item_count)
 //      .all<user>(@"where length(password) <= 6
 //                   order by email");
@@ -73,15 +74,41 @@ public class session_base : IDisposable {
   }
 
   public List<t> all<t>(string sql) {
+    if (cache_key != null && cache_result != null && !cached_one) {
+      cache_key = null;
+      return (List<t>)cache_result;
+    }
+
     sql = process(typeof(t), sql);
     
     var table = all(sql);
     var list = mapper.map<t>(table);
+
+    if (cache_key != null && !cached_one) {
+      cache_key = null;
+      _cache.set(cache_key, list);
+    }
     return list;
   }
 
   public t one<t>(string sql) {
-    return all<t>(sql).First();
+    if (cache_key != null) {
+      if (cache_result != null) {
+        cache_key = null;
+        return (t)cache_result;
+      }
+      cached_one = true;
+    }
+
+    var result = all<t>(sql).First();
+    
+    if (cache_key != null) {
+      _cache.set(cache_key, result);
+      cache_key = null;
+      cached_one = false;
+    }
+
+    return result;
   }
 
   public int execute(string sql) {
@@ -133,7 +160,7 @@ public class session_base : IDisposable {
       foreach (var p in param_info) {
         var parameter = command.CreateParameter();
         parameter.ParameterName = p.Key;
-        parameter.Value = p.Value;    
+        parameter.Value = p.Value;
         command.Parameters.Add(parameter);
       }
 
@@ -147,6 +174,16 @@ public class session_base : IDisposable {
         connection.Close();
     }
     return table;
+  }
+
+  object cache_result;
+  string cache_key;
+  bool cached_one = false;
+
+  public session_base cache(string key) {
+    cache_result = _cache.get(key);
+    cache_key = key;
+    return this;
   }
 
   IDbConnection create_connection() {
