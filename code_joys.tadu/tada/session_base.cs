@@ -140,11 +140,6 @@ public class session_base : IDisposable {
       reader = command.ExecuteReader();
       table.Load(reader);
     }
-    // want to let user catch exception on their own; they may not want to rollback but rather handle exception
-    //catch (Exception ex) {
-    //  if (transaction_started && transaction != null)
-    //    transaction.Rollback();
-    //}
     finally {
       if (reader != null)
         reader.Close();
