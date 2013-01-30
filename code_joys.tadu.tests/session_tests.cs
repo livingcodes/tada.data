@@ -133,5 +133,14 @@ public class session_tests : base_tests {
 
     assert(diff > count);
   }
+
+  [TestMethod] public void get_email() {
+    var db = new session();
+    var emails = db.all<string>("select email from users");
+    assert(emails.Count > 1);
+
+    var email = db.one<string>("select email from users where id = 2");
+    assert(email.Contains("@"));
+  }
 }
 }
