@@ -28,8 +28,10 @@ public class table_to_struct_mapper : i_table_to_object_mapper
 
     var fields = typeof(t).GetFields(BindingFlags.Public | BindingFlags.Instance);
     foreach (DataRow row in table.Rows) {
-      if (is_single_value)
+      if (is_single_value) {
         items.Add((t)row[0]);
+        continue;
+      }
       var item = default(t);
       //if (item == null)
       //  item = (t)typeof(t).GetConstructor(null).Invoke(null);
