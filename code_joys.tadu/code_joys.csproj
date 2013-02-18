@@ -52,6 +52,7 @@
     <Compile Include="tada\session_base.cs" />
     <Compile Include="tada\sql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="tada\table_to_class_mapper.cs" />
     <Compile Include="tada\table_to_object_mapper.cs" />
   </ItemGroup>
   <ItemGroup>

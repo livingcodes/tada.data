@@ -54,13 +54,25 @@ public class session_base : IDisposable {
   }
 
 //  void test() {
-//    db.sproc("get_user", params).all<user>();
-//    db.sproc("get_user").param("id", 1800).all<user>();
+//    var user = db.sproc("get_user", id).one<user>();
+//    var users = db.sproc("get_user").param("id", id).all<user>();
+//    var result = db.sproc("login", email, password)
+//    if (result.has_error)
+//      display(result.error.message)
+//      return;
+//    else
+//      user = result.user
+
 
 //    var users = db
 //      .page(first_index, last_index, out item_count)
 //      .all<user>(@"where length(password) <= 6
 //                   order by email");
+
+//      .all<user>("where length(password) <= 6", 
+//                 start_index, end_index, out count);
+
+//      db.page_item_count
 //  }
 
   public virtual string process(Type type, string sql) {

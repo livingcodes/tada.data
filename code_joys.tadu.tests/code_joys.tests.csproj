@@ -52,6 +52,10 @@
   </Choose>
   <ItemGroup>
     <Compile Include="base_tests.cs" />
+    <Compile Include="employee_db_tests.cs" />
+    <Compile Include="tada\employee.cs" />
+    <Compile Include="tada\employee_db.cs" />
+    <Compile Include="tada\employee_mapping.cs" />
     <Compile Include="tada\session.cs" />
     <Compile Include="tada\sql_tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,7 +70,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

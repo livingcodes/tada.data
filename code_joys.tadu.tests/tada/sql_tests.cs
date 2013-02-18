@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace tada.tests {
 
 [TestClass]
-public class sql_tests : base_tests {
+public class sql_tests : base_test {
   [TestMethod]
   public void select_from_where_order() {
     var sql = new sql()

@@ -5,7 +5,7 @@ using tada;
 
 namespace tada.tests {
 [TestClass]
-public class session_tests : base_tests {
+public class session_tests : base_test {
   [TestMethod, Ignore] public void execute() {
     var session = new session();
     var rows_affected = session.execute("insert into users (email, password) values ('casey@codejoys.com', 'password')");
