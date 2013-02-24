@@ -49,6 +49,7 @@
     <Compile Include="code_joys\string_extensions.cs" />
     <Compile Include="tada\cache.cs" />
     <Compile Include="tada\connection_factory.cs" />
+    <Compile Include="tada\db_id.cs" />
     <Compile Include="tada\session_base.cs" />
     <Compile Include="tada\sql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

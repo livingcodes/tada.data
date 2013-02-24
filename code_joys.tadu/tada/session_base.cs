@@ -7,7 +7,7 @@ using code_joys;
 
 namespace tada {
 
-public class session_base : IDisposable {
+public partial class session_base : IDisposable {
   i_connection_factory connection_factory;
   i_table_to_object_mapper mapper;
   i_cache _cache;
