@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace tada.tests 
+namespace tada.tests
 {
 [TestClass]
 public class db_id_tests : base_test
@@ -11,10 +11,21 @@ public class db_id_tests : base_test
       user.password = "insert";
 
       var db = new session();
-      var id = db.insert<user>(user);
+      var id = db.insert(user);
       assert(id > 0);
 
       var rows_affected = db.delete<user>(id);
+      assert(rows_affected == 1);
+   }
+
+   [TestMethod] public void update() {
+      var user = new user();
+      user.id = 11;
+      user.email = "update@test.com";
+      user.password = "update";
+
+      var db = new session();
+      var rows_affected = db.update(user);
       assert(rows_affected == 1);
    }
 }

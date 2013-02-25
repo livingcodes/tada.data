@@ -55,6 +55,35 @@ public partial class session_base
       return id;
    }
 
+   /// <summary>update item based on id</summary>
+   public int update<t>(t item) {
+      //update table set col1 = val1, col2 = val2
+      var mapping = get_table_mapping<t>();
+      string sql = "";
+      string id = "";
+
+      var fields = typeof(t).GetFields(BindingFlags.Public | BindingFlags.Instance);
+      foreach (var field in fields) {
+         if (field.Name.ToLower() == "id") {
+            id = field.GetValue(item).ToString();
+            continue;
+         }
+         var column_mapping = mapping.column_mappings
+            .FirstOrDefault(m => m.domain_member == field.Name);
+         var quote = "";
+         if (field.FieldType.equals_any(typeof(string), typeof(DateTime)))
+            quote = "'";
+         if (column_mapping != null)
+            sql += "{0}={1}{2}{1}, ".plug(column_mapping.column_name, quote, field.GetValue(item));
+         else
+            sql += "{0}={1}{2}{1}, ".plug(field.Name, quote, field.GetValue(item));
+      }
+      sql = sql.Remove(sql.Length-2);
+      sql = "update {0} set {1} where id={2}"
+         .plug(mapping.table, sql, id);
+      return execute(sql);
+   }
+
    public int delete<t>(int id) {
       var mapping = get_table_mapping<t>();
       return execute("delete from {0} where id={1}"
