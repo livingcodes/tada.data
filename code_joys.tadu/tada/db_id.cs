@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace tada 
 {
-// these methods require the item to have an id
+// these methods require the item to have an int id
 public partial class session_base 
 {
    /// <summary>gets one item by id</summary>
@@ -28,6 +28,9 @@ public partial class session_base
       var fields = typeof(t).GetFields(BindingFlags.Public | BindingFlags.Instance);
 
       foreach (var field in fields) {
+         if (field.Name.ToLower() == "id")
+            continue;
+
          if (field.FieldType.equals_any(typeof(string), typeof(DateTime)))
                quote = "'";
          
@@ -52,10 +55,13 @@ public partial class session_base
          set @id = @@identity
          select @id");
 
+      // if item is struct then id will not get set on value outside this method
+      item.GetType().GetField("id").SetValueDirect(__makeref(item), id);
+
       return id;
    }
 
-   /// <summary>update item based on id</summary>
+   /// <summary>update item based on id and return number of rows affected</summary>
    public int update<t>(t item) {
       //update table set col1 = val1, col2 = val2
       var mapping = get_table_mapping<t>();
@@ -84,6 +90,22 @@ public partial class session_base
       return execute(sql);
    }
 
+   /// <summary>save item (insert or update)</summary>
+   public int save<t>(t item) {
+      var id = (int)typeof(t).GetField("id").GetValue(item);
+      if (id == 0)
+         return insert(item);
+      
+      var count = all<t>("where id={0}".plug(id)).Count;
+      if (count == 0)
+         id = insert(item);
+      else
+         update(item);
+      
+      return id;
+   }
+
+   /// <summary>delete item by id</summary>
    public int delete<t>(int id) {
       var mapping = get_table_mapping<t>();
       return execute("delete from {0} where id={1}"

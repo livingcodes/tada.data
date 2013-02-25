@@ -5,28 +5,37 @@ namespace tada.tests
 [TestClass]
 public class db_id_tests : base_test
 {
-   [TestMethod] public void insert() {
+   [TestMethod] public void insert_update_delete() {
       var user = new user();
-      user.email = "insert@test.com";
-      user.password = "insert";
+      user.email = "insert@update.com";
+      user.password = "password";
 
       var db = new session();
-      var id = db.insert(user);
-      assert(id > 0);
 
-      var rows_affected = db.delete<user>(id);
+      user.id = db.insert<user>(user);
+      assert(user.id > 0);
+
+      var rows_affected = db.update(user);
+      assert(rows_affected == 1);
+
+      rows_affected = db.delete<user>(user.id);
       assert(rows_affected == 1);
    }
 
-   [TestMethod] public void update() {
+   [TestMethod] public void save() {
       var user = new user();
-      user.id = 11;
-      user.email = "update@test.com";
-      user.password = "update";
+      user.email = "save@test.com";
+      user.password = "save - insert";
 
       var db = new session();
-      var rows_affected = db.update(user);
-      assert(rows_affected == 1);
+      user.id = db.save(user); // insert
+      assert(user.id > 0);
+
+      user.password = "save - update";
+      db.save(user); // update
+      assert(user.password == "save - update");
+
+      db.delete<user>(user.id);
    }
 }
 }
