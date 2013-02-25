@@ -11,7 +11,10 @@ public class db_id_tests : base_test
       user.password = "insert";
 
       var db = new session();
-      var rows_affected = db.insert<user>(user);
+      var id = db.insert<user>(user);
+      assert(id > 0);
+
+      var rows_affected = db.delete<user>(id);
       assert(rows_affected == 1);
    }
 }

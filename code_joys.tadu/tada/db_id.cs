@@ -8,14 +8,17 @@ namespace tada
 // these methods require the item to have an id
 public partial class session_base 
 {
-   /// <summary>Gets one item by id</summary>
+   /// <summary>gets one item by id</summary>
    public t one<t>(int id) {
       return one<t>("where id={0}".plug(id));
    }
 
+   /// <summary>inserts item and returns id</summary>
    public int insert<t>(t item) {
       //insert into table (col1, col2) values (val1, val2)
-      var mapping = this.mapper.table_mappings.FirstOrDefault(m => m.type.Equals(typeof(t)));
+
+      // generate sql
+      var mapping = get_table_mapping<t>();
       if (mapping == null)
          throw new Exception("No mapping exists for type '{0}'".plug(typeof(t).ToString()));
       string column_sql = "";
@@ -43,7 +46,23 @@ public partial class session_base
       var sql = "insert into {0} ({1}) values ({2})"
          .plug(mapping.table, column_sql, value_sql);
 
-      return execute(sql);
+      // insert item and get id
+      var id = one<int>(sql + @"
+         declare @id int
+         set @id = @@identity
+         select @id");
+
+      return id;
+   }
+
+   public int delete<t>(int id) {
+      var mapping = get_table_mapping<t>();
+      return execute("delete from {0} where id={1}"
+         .plug(mapping.table, id));
+   }
+
+   table_mapping get_table_mapping<t>() {
+      return mapper.table_mappings.FirstOrDefault(m => m.type.Equals(typeof(t)));
    }
 }
 }
