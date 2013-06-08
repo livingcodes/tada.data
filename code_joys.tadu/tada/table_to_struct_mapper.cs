@@ -49,11 +49,6 @@ public class table_to_struct_mapper : i_table_to_object_mapper
   }
 }
 
-public interface i_table_to_object_mapper {
-  List<t> map<t>(DataTable table);
-  List<table_mapping> table_mappings { get; }
-}
-
 public class column_mapping
 {
    public string domain_member, column_name;
