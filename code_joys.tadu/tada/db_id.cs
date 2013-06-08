@@ -104,6 +104,26 @@ public partial class session_base
          else
             sql += "{0}={1}{2}{1}, ".plug(field.Name, quote, field.GetValue(item));
       }
+
+      var properties = typeof(t).GetProperties(
+         BindingFlags.Public | BindingFlags.Instance)
+         .Where(p => p.CanRead && p.CanWrite);
+      foreach (var property in properties) {
+         if (property.Name.ToLower() == "id") {
+            id = property.GetValue(item).ToString();
+            continue;
+         }
+         var column_mapping = mapping.column_mappings
+            .FirstOrDefault(m => m.domain_member == property.Name);
+         var quote = "";
+         if (property.PropertyType.equals_any(typeof(string), typeof(DateTime)))
+            quote = "'";
+         if (column_mapping != null)
+            sql += "{0}={1}{2}{1}, ".plug(column_mapping.column_name, quote, property.GetValue(item));
+         else
+            sql += "{0}={1}{2}{1}, ".plug(property.Name, quote, property.GetValue(item));
+      }
+
       sql = sql.Remove(sql.Length-2);
       sql = "update {0} set {1} where id={2}"
          .plug(mapping.table, sql, id);
