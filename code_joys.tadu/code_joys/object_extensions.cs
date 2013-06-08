@@ -8,5 +8,13 @@ public static class object_extensions
             return true;
       return false;
    }
+   public static bool is_set(this object obj) {
+      return !(obj.not_set());
+   }
+   public static bool not_set(this object obj) {
+      return (obj == null 
+         || obj == System.DBNull.Value 
+         || obj.ToString().Trim() == "");
+   }
 }
 }
