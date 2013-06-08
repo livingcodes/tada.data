@@ -53,7 +53,7 @@
   <ItemGroup>
     <Compile Include="base_tests.cs" />
     <Compile Include="employee_db_tests.cs" />
-    <Compile Include="tada\db_id_tests.cs" />
+    <Compile Include="tada\struct_tests.cs" />
     <Compile Include="tada\employee.cs" />
     <Compile Include="tada\employee_db.cs" />
     <Compile Include="tada\employee_mapping.cs" />

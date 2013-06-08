@@ -29,5 +29,9 @@ public class struct_tests : base_test
       //user = db.one<user>(user.id);
       //assert(user.id == 0);
    }
+
+   [TestMethod] public void prepare_database() {
+      
+   }
 }
 }

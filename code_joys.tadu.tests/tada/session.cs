@@ -8,11 +8,12 @@ namespace tada.tests
 public class session : session_base
 {
    public session() : 
-   base(new sql_server_connection_factory(ConfigurationManager.ConnectionStrings["default"].ToString()),
-        new table_to_struct_mapper(
-            new app_table_mappings()
-        ),
-        new in_memory_cache()
+   base(new sql_server_connection_factory(
+      ConfigurationManager.ConnectionStrings["default"].ToString()),
+      new table_to_struct_mapper(
+         new app_table_mappings()
+      ),
+      new in_memory_cache()
    )
    { }
 }
