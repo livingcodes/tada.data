@@ -6,6 +6,7 @@ using System.Reflection;
 
 namespace tada 
 {
+// sets public fields
 public class table_to_class_mapper : i_table_to_object_mapper
 {
   public table_to_class_mapper(List<table_mapping> table_mappings) {

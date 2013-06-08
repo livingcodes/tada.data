@@ -71,7 +71,10 @@ public class table_mapping
    }
 
    public string get_column_name(string domain_member) {
-      return column_mappings.First(m => m.domain_member == domain_member).column_name;
+      var column_mapping = column_mappings.FirstOrDefault(m => m.domain_member == domain_member);
+      if (column_mapping == null)
+         return null;
+      return column_mapping.column_name;
    }
 }
 }
