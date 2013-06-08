@@ -85,6 +85,10 @@ public partial class session_base : IDisposable {
     return new_sql;
   }
 
+   public List<t> all<t>() {
+      return all<t>("where 1=1");
+   }
+
   public List<t> all<t>(string sql) {
     if (cache_key != null && cache_result != null && !cached_one) {
       cache_key = null;

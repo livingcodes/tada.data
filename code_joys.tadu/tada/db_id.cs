@@ -43,6 +43,26 @@ public partial class session_base
          value_sql += "{0}{1}{0}, ".plug(quote, field.GetValue(item));
       }
 
+      var properties = typeof(t).GetProperties(
+         BindingFlags.Public | BindingFlags.Instance)
+         .Where(p => p.CanRead && p.CanWrite);
+
+      foreach (var property in properties) {
+         if (property.Name.ToLower() == "id")
+            continue;
+
+         if (property.PropertyType.equals_any(typeof(string), typeof(DateTime)))
+            quote = "'";
+
+         var column_mapping = mapping.column_mappings.FirstOrDefault(m => m.domain_member == property.Name);
+
+         if (column_mapping != null)
+            column_sql += column_mapping.column_name + ", ";
+         else
+            column_sql += property.Name + ", ";
+         value_sql += "{0}{1}{0}, ".plug(quote, property.GetValue(item));
+      }
+
       column_sql = column_sql.Remove(column_sql.Length-2);
       value_sql = value_sql.Remove(value_sql.Length-2);
 

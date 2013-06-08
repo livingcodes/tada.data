@@ -3,6 +3,7 @@
 struct user
 {
    public int id;
-   public string email, password;
+   public string email;
+   public string password { get; set; }
 }
 }
