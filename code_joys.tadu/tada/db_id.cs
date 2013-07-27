@@ -152,6 +152,12 @@ public partial class session_base
          .plug(mapping.table, id));
    }
 
+   /// <summary>delete all items of specified typed</summary>
+   public int  delete<t>() {
+      var mapping = get_table_mapping<t>();
+      return execute("delete from {0}".plug(mapping.table));
+   }
+
    table_mapping get_table_mapping<t>() {
       return mapper.table_mappings.FirstOrDefault(m => m.type.Equals(typeof(t)));
    }
