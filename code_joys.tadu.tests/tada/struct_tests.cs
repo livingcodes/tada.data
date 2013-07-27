@@ -11,6 +11,12 @@ public class struct_tests : base_test
    public struct_tests() {
       db = new session();      
    }
+
+   [TestMethod] public void delete_all() {
+      db.delete<user>();
+      var users = db.all<user>();
+      assert(users.Count == 0);
+   }
    
    [TestMethod] public void insert_update_select_delete() {
       var user = new user();
