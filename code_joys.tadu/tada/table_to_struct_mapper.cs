@@ -33,8 +33,6 @@ public class table_to_struct_mapper : i_table_to_object_mapper
         continue;
       }
       var item = default(t);
-      //if (item == null)
-      //  item = (t)typeof(t).GetConstructor(null).Invoke(null);
       foreach (var field in fields) {
         if (table.Columns.Contains(field.Name))
           field.SetValueDirect(__makeref(item), row[field.Name]);
@@ -43,8 +41,20 @@ public class table_to_struct_mapper : i_table_to_object_mapper
           field.SetValueDirect(__makeref(item), row[table_mapping.get_column_name(field.Name)]);
         }
       }
-      items.Add(item);
+      object boxed = item;
+      var properties = typeof(t).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                .Where(p => p.CanRead && p.CanWrite);
+      foreach (var property in properties) {
+         if (table.Columns.Contains(property.Name))
+            property.SetValue(boxed, row[property.Name]);
+         else {
+            var table_mapping = table_mappings.First(m => m.type == typeof(t));
+            property.SetValue(boxed, row[table_mapping.get_column_name(property.Name)]);
+         }
+      }
+      items.Add((t)boxed);
     }
+    
     return items;
   }
 }
