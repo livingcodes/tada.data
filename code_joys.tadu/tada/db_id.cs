@@ -76,7 +76,11 @@ public partial class session_base
          select @id");
 
       // if item is struct then id will not get set on value outside this method
-      item.GetType().GetField("id").SetValueDirect(__makeref(item), id);
+      var id_field = item.GetType().GetField("id");
+      if (id_field != null)
+         id_field.SetValueDirect(__makeref(item), id);
+      else
+         item.GetType().GetProperty("id").SetValue(item, id);
 
       return id;
    }

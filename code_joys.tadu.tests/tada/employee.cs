@@ -2,7 +2,7 @@
 {
 class employee 
 {
-  public int id;
+  public int id { get; set; }
   public string email, password;
 }
 }
