@@ -15,9 +15,18 @@ public class table_to_class_mapper : i_table_to_object_mapper
 
   public List<t> map<t>(DataTable table) {
     var items = new List<t>();
+    var is_single_value = false;
+    if (typeof(t) == typeof(int) || typeof(t) == typeof(double) 
+    ||  typeof(t) == typeof(DateTime) || typeof(t) == typeof(string))
+      is_single_value = true;
     
     var fields = typeof(t).GetFields(BindingFlags.Public | BindingFlags.Instance);
     foreach (DataRow row in table.Rows) {
+      if (is_single_value) {
+        items.Add((t)row[0]);
+        continue;
+      }
+      
       var item = default(t);
       item = (t)typeof(t).GetConstructor(System.Type.EmptyTypes).Invoke(null);
       foreach (var field in fields) {
