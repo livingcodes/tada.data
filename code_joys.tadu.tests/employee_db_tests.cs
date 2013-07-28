@@ -19,6 +19,7 @@ public class employee_session_tests : base_test
 
     var employees = db.all<employee>();
     assert(employees.Count > 0);
+    employee = employees[0];
     assert(employee.password == "password");
 
     employee.email = "changed@code-joys.com";

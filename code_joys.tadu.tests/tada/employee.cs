@@ -3,6 +3,7 @@
 class employee 
 {
   public int id { get; set; }
-  public string email, password;
+  public string email;
+  public string password { get; set; }
 }
 }

@@ -21,6 +21,8 @@ public class table_to_class_mapper : i_table_to_object_mapper
       is_single_value = true;
     
     var fields = typeof(t).GetFields(BindingFlags.Public | BindingFlags.Instance);
+    var properties = typeof(t).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                              .Where(p => p.CanWrite && p.CanRead);
     foreach (DataRow row in table.Rows) {
       if (is_single_value) {
         items.Add((t)row[0]);
@@ -35,6 +37,14 @@ public class table_to_class_mapper : i_table_to_object_mapper
         else {
           var table_mapping = table_mappings.First(m => m.type == typeof(t));
           field.SetValueDirect(__makeref(item), row[table_mapping.get_column_name(field.Name)]);
+        }
+      }
+      foreach (var property in properties) {
+        if (table.Columns.Contains(property.Name))
+          property.SetValue(item, row[property.Name]);
+        else {
+          var table_mapping = table_mappings.First(m => m.type == typeof(t));
+          property.SetValue(item, row[table_mapping.get_column_name(property.Name)]);
         }
       }
       items.Add(item);
