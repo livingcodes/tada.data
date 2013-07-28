@@ -27,6 +27,8 @@ public class table_to_struct_mapper : i_table_to_object_mapper
       is_single_value = true;
 
     var fields = typeof(t).GetFields(BindingFlags.Public | BindingFlags.Instance);
+    var properties = typeof(t).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                              .Where(p => p.CanRead && p.CanWrite);
     foreach (DataRow row in table.Rows) {
       if (is_single_value) {
         items.Add((t)row[0]);
@@ -42,8 +44,6 @@ public class table_to_struct_mapper : i_table_to_object_mapper
         }
       }
       object boxed = item;
-      var properties = typeof(t).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                                .Where(p => p.CanRead && p.CanWrite);
       foreach (var property in properties) {
          if (table.Columns.Contains(property.Name))
             property.SetValue(boxed, row[property.Name]);
