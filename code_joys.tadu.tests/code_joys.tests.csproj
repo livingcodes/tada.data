@@ -58,7 +58,6 @@
     <Compile Include="tada\employee_db.cs" />
     <Compile Include="tada\employee_mapping.cs" />
     <Compile Include="tada\session.cs" />
-    <Compile Include="tada\sql_tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="session_tests.cs" />
     <Compile Include="tada\user.cs" />
