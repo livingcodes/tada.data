@@ -6,85 +6,110 @@ using tada;
 namespace tada.tests {
 [TestClass]
 public class session_tests : base_test {
-  [TestMethod, Ignore] public void execute() {
-    var session = new session();
-    var rows_affected = session.execute("insert into users (email, password) values ('casey@codejoys.com', 'password')");
-    assert(rows_affected == 1);
-  }
+   session session;
+   user user;
 
-  [TestMethod] public void all() {
-    var session = new session();
-    var users = session.all<user>("select * from users");
-    assert(users.Count > 0);
-    assert(users[0].email != null);
-  }
+   [TestInitialize]
+   public void initialize() {
+      session = new session();
+      user = new user();
+      user.email = "casey@code-joys.com";
+      user.password = "password";
+      user.age = 33;
+   }
+   [TestCleanup]
+   public void cleanup() {
+      session.delete<user>();
+   }
 
-  [TestMethod] public void one() {
-    var session = new session();
-    var email = "casey@codejoys.com";
-    var user = session.one<user>("select email, password from users where email='{0}'".plug(email));
-    assert(user.email == email);
-  }
+   [TestMethod] public void execute_and_get_rows_affected() {
+      var rows_affected = session.execute("insert into users (email, password) values ('{0}', '{1}')"
+         .plug(user.email, user.password));
+      assert(rows_affected == 1);
+   }
 
-  [TestMethod, Ignore] public void share_connection() {
-    var session = new session().open_connection();
-    session.execute("insert into users (email, password) values ('{0}', '{1}')".plug("c@b.com", "ca"));
-    var user = session.one<user>("select * from users where email='c@j.com'");
-    session.close_connection();
-  }
+   int insert() {
+      return session.insert<user>(user);   
+   }
 
-  [TestMethod, Ignore] public void dispose_connection() {
-    user user;
-    using (var session = new session().open_connection()) {
-      session.execute("insert into users (email, password) values ('{0}', '{1}')".plug("c@b.com", "ca"));
-      user = session.one<user>("select * from users where email='c@j.com'");
-    }
-    assert(user.email == "c@j.com");
-  }
+   [TestMethod] public void all() {
+      insert();
+      var users = session.all<user>("select * from users");
+      assert(users.Count > 0);
+      assert(users[0].email != null);
+   }
+
+   [TestMethod] public void one() {
+      insert();
+      var _user = session.one<user>("select id, email, password from users where email='{0}'".plug(user.email));
+      assert(user.email == _user.email);
+   }
+
+   [TestMethod] public void share_connection() {
+      var email = user.email;
+      var session = new session().open_connection();
+         session.insert(user);
+         user = session
+            .param("@email", email)
+            .one<user>("where email=@email");
+      session.close_connection();
+      assert(user.email == email);
+   }
+
+   [TestMethod] public void dispose_connection() {
+      using (session.open_connection()) {
+         session.insert(user);
+         user = session
+            .param("@email", user.email)
+            .one<user>("where email=@email");
+      }
+      assert(user.email != null);
+   }
   
-  [TestMethod] public void domain_member_and_column_name_differ_but_are_mapped() {
-    var session = new session();
-    var user = session.one<user>("select email as email_address, password from users where email = 'casey@codejoys.com'");
-    assert(user.email == "casey@codejoys.com");
-  }
+   [TestMethod] public void domain_member_and_column_name_differ_but_are_mapped() {
+      var age = user.age;
+      session.insert(user);
+      user = session
+         .param("@email", user.email)
+         .one<user>("where email = @email");
+      assert(user.age == age);
+   }
 
-  [TestMethod] public void get_users_with_same_email_using_plug() {
-    var email = "casey@codejoys.com";
-    var session = new session();
-    var users = session.all<user>("where email = '{0}'".plug(email));
-    assert(users.Count == 1);
-  }
+   [TestMethod] public void get_users_with_same_email_using_plug() {
+      session.insert(user);
+      var users = session.all<user>("where email = '{0}'".plug(user.email));
+      assert(users.Count == 1);
+   }
 
-  [TestMethod] public void get_users_with_same_email_using_parameter() {
-    var email = "casey@codejoys.com";
-    var id = 2;
+   [TestMethod] public void get_users_with_same_email_using_string_parameter() {
+      session.insert(user);
+      var users = session
+         .param("@email", user.email)
+         .all<user>("where email = @email");
+      assert(users.Count == 1);
+   }
 
-    var users = new session()
-      .param("@email", email)
-      .param("@id", id)
-      .all<user>("where email = @email and id = @id");
-    assert(users.Count == 1);
-  }
+   [TestMethod] public void get_users_with_same_id_using_int_parameter() {
+      var id = session.insert(user);
+      var users = session
+         .param("@id", id)
+         .all<user>("where id = @id");
+      assert(users.Count == 1);
+   }
 
-  [TestMethod] public void get_users_with_same_email_using_int_parameter() {
-    var id = 8;
-    var session = new session();
-    var users = session
-      .param("@id", id)
-      .all<user>("where id = @id");
-    assert(users.Count == 1);
-  }
+   [TestMethod] public void rollback_uncommitted_transaction() {
+      var id = session.insert(user);
+      var email = user.email;
 
-  [TestMethod]
-  public void rollback_uncommitted_transaction() {
-    using (var db = new session().start_transaction())
-      db.execute("update users set email = 'clown@yahoo.com' where id = 5");
+      var updated_email = "clown@yahoo.com";
+      using (session.start_transaction())
+         session
+            .execute("update users set email = '{0}'"
+            .plug(updated_email));
     
-    var user = new session()
-      .param("@id", 5)
-      .one<user>("where id=@id");
-
-    assert(user.email == "c@b.com");
+      user = session.one<user>(id);
+      assert(user.email == email);
+      assert(user.email != updated_email);
   }
 
   [TestMethod]
